@@ -1,0 +1,15 @@
+{
+  "name": "nerd-cli",
+  "version": "0.1.0",
+  "description": "NERD stack CLI",
+  "bin": {
+    "nerd": "./bin/nerd-cli"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["reactjs", "expressjs", "documentdb", "nodejs"],
+  "author": "Thomas Stringer",
+  "license": "MIT"
+}
