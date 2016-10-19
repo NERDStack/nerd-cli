@@ -11,5 +11,9 @@
   },
   "keywords": ["reactjs", "expressjs", "documentdb", "nodejs"],
   "author": "Thomas Stringer",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NERDStack/nerd-cli.git"
+  }
 }
