@@ -1,20 +1,18 @@
 const program = require('commander');
 const package = require('../package.json');
+const install = require('./install').install;
+const cleanup = require('./cleanup').cleanup;
 
 program.version(package.version);
 
 program
   .command('install')
-  .action(() => {
-    console.log('install operation');
-  })
+  .action(install)
   .description('install the base app');
 
 program
   .command('cleanup')
-  .action(() => {
-    console.log('cleanup operation');
-  })
+  .action(cleanup)
   .description('remove all unnecessary sample code');
 
 program.parse(process.argv);
