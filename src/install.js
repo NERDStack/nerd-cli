@@ -1,10 +1,4 @@
-module.exports = (() => {
-  function install() {
-    console.log('running install...');
-  }
-
-  return {
-    install
-  };
-})();
+module.exports.install = function (dir) {
+  console.log(`Install in ${dir}`);
+}
 

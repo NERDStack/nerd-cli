@@ -6,7 +6,7 @@ const cleanup = require('./cleanup').cleanup;
 program.version(packageConfig.version);
 
 program
-  .command('install')
+  .command('install [dir]')
   .action(install)
   .description('install the base app');
 
