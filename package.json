@@ -7,7 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "reactjs",
@@ -22,6 +22,10 @@
     "url": "https://github.com/NERDStack/nerd-cli.git"
   },
   "dependencies": {
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "nodegit": "^0.16.0"
+  },
+  "devDependencies": {
+    "jest": "^17.0.3"
   }
 }
