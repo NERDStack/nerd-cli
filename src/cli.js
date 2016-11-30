@@ -1,9 +1,9 @@
 const program = require('commander');
-const package = require('../package.json');
+const packageConfig = require('../package.json');
 const install = require('./install').install;
 const cleanup = require('./cleanup').cleanup;
 
-program.version(package.version);
+program.version(packageConfig.version);
 
 program
   .command('install')
