@@ -13,5 +13,5 @@ function fullWorkingDirectory(dir) {
 module.exports = (dir) => {
   console.log(`Install in ${dir}`);
   console.log(fullWorkingDirectory(dir));
-}
+};
 

@@ -4,13 +4,21 @@ const install = require('./install');
 
 const destinationDir = 'testdir';
 
+/* eslint-disable no-undef */
+
 test('remote repo is cloned', () => {
   install(destinationDir)
     .then(() => {
-      fs.stat(path.join(process.cwd(), destinationDir), (err) => {
+      const destinationRepoPath = path.join(process.cwd(), destinationDir);
+      console.log(`testing existence of ${destinationRepoPath}`);
+      fs.stat(destinationRepoPath, (err) => {
         expect(err).toBeUndefined();
       });
     })
-    .catch(err => expect(err).toBeUndefined());
+    .catch(err => {
+      throw err;
+    });
 });
+
+/* eslint-enable no-undef */
 
