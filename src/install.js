@@ -3,7 +3,7 @@ const Git = require('nodegit');
 
 function cloneRepo(destination) {
   const repoUrl = 'https://github.com/NERDStack/nerdy-movies';
-  return Git.Close(repoUrl, destination);
+  return Git.Clone(repoUrl, destination);
 }
 
 function fullWorkingDirectory(dir) {
@@ -11,7 +11,6 @@ function fullWorkingDirectory(dir) {
 }
 
 module.exports = (dir) => {
-  console.log(`Install in ${dir}`);
-  console.log(fullWorkingDirectory(dir));
+  return cloneRepo(fullWorkingDirectory(dir));
 };
 
