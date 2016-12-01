@@ -8,6 +8,8 @@ const destinationDirNodeModulesTest = 'nmtest';
 
 /* eslint-disable no-undef */
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 300000;
+
 it('remote repo is cloned', () => {
   return install(destinationDir)
     .then(() => {
@@ -50,15 +52,36 @@ afterAll(() => {
   console.log('in afterAll');
   const testRepoClonePath = path.join(process.cwd(), destinationDir);
   const testNodeModulesPath = path.join(process.cwd(), destinationDirNodeModulesTest);
-  fs.stat(testRepoClonePath, err => {
-    if (!err) {
-      rimraf(testRepoClonePath);
-    }
-  });
-  fs.stat(testNodeModulesPath, err => {
-    if (!err) {
-      rimraf(testNodeModulesPath);
-    }
+  return new Promise((resolve, reject) => {
+    fs.stat(testRepoClonePath, err => {
+      if (!err) {
+        rimraf(testRepoClonePath, err => {
+          if (err) {
+            reject(err);
+          }
+          else {
+            fs.stat(testNodeModulesPath, err => {
+              if (!err) {
+                rimraf(testNodeModulesPath, err => {
+                  if (err) {
+                    reject(err);
+                  }
+                  else {
+                    resolve();
+                  }
+                });
+              }
+              else {
+                resolve();
+              }
+            });
+          }
+        });
+      }
+      else {
+        resolve();
+      }
+    });
   });
 });
 

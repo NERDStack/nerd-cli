@@ -1,6 +1,6 @@
+const exec = require('child_process').exec;
 const path = require('path');
 const Git = require('nodegit');
-const npm = require('npm');
 
 function cloneRepo(destination) {
   const repoUrl = 'https://github.com/NERDStack/nerdy-movies';
@@ -12,6 +12,19 @@ function fullWorkingDirectory(dir) {
 }
 
 module.exports = (dir) => {
-  return cloneRepo(fullWorkingDirectory(dir));
+  const fullLocalRepoPath = fullWorkingDirectory(dir);
+  return cloneRepo(fullLocalRepoPath)
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        exec('npm install', { cwd: fullLocalRepoPath }, err => {
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        });
+      });
+    });
 };
 

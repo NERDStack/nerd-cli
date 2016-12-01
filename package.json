@@ -23,8 +23,7 @@
   },
   "dependencies": {
     "commander": "^2.9.0",
-    "nodegit": "^0.16.0",
-    "npm": "^4.0.2"
+    "nodegit": "^0.16.0"
   },
   "devDependencies": {
     "jest": "^17.0.3",
