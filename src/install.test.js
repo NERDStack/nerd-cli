@@ -14,7 +14,6 @@ it('remote repo is cloned', () => {
   return install(destinationDir)
     .then(() => {
       const destinationRepoPath = path.join(process.cwd(), destinationDir);
-      console.log(`testing existence of ${destinationRepoPath}`);
       return new Promise((resolve, reject) => {
         fs.stat(destinationRepoPath, (err) => {
           expect(err).toBeNull();
@@ -33,7 +32,6 @@ it('npm modules installed', () => {
   return install(destinationDirNodeModulesTest)
     .then(() => {
       const nodeModulesPath = path.join(process.cwd(), destinationDirNodeModulesTest, 'node_modules');
-      console.log(`testing existence of ${nodeModulesPath}`);
       return new Promise((resolve, reject) => {
         fs.stat(nodeModulesPath, (err) => {
           expect(err).toBeNull();
@@ -49,7 +47,6 @@ it('npm modules installed', () => {
 });
 
 afterAll(() => {
-  console.log('in afterAll');
   const testRepoClonePath = path.join(process.cwd(), destinationDir);
   const testNodeModulesPath = path.join(process.cwd(), destinationDirNodeModulesTest);
   return new Promise((resolve, reject) => {
