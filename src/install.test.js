@@ -8,59 +8,56 @@ const destinationDirNodeModulesTest = 'nmtest';
 
 /* eslint-disable no-undef */
 
-test('remote repo is cloned', () => {
-  install(destinationDir)
+it('remote repo is cloned', () => {
+  return install(destinationDir)
     .then(() => {
       const destinationRepoPath = path.join(process.cwd(), destinationDir);
       console.log(`testing existence of ${destinationRepoPath}`);
-      fs.stat(destinationRepoPath, (err) => {
-        expect(err).toBeUndefined();
+      return new Promise((resolve, reject) => {
+        fs.stat(destinationRepoPath, (err) => {
+          expect(err).toBeNull();
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        });
       });
-    })
-    .catch(err => {
-      throw err;
     });
 });
 
-test('npm modules installed', () => {
-  install(destinationDirNodeModulesTest)
+it('npm modules installed', () => {
+  return install(destinationDirNodeModulesTest)
     .then(() => {
       const nodeModulesPath = path.join(process.cwd(), destinationDirNodeModulesTest, 'node_modules');
       console.log(`testing existence of ${nodeModulesPath}`);
-      fs.stat(nodeModulesPath, (err) => {
-        expect(err).toBeUndefined();
+      return new Promise((resolve, reject) => {
+        fs.stat(nodeModulesPath, (err) => {
+          expect(err).toBeNull();
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        });
       });
-    })
-    .catch(err => {
-      throw err;
     });
 });
 
-afterEach(() => {
-  const destinationRepoPath = path.join(process.cwd(), destinationDir);
-  const nodeModulesTestRepoPath = path.join(process.cwd(), destinationDirNodeModulesTest);
-  fs.stat(destinationRepoPath, (err) => {
+afterAll(() => {
+  console.log('in afterAll');
+  const testRepoClonePath = path.join(process.cwd(), destinationDir);
+  const testNodeModulesPath = path.join(process.cwd(), destinationDirNodeModulesTest);
+  fs.stat(testRepoClonePath, err => {
     if (!err) {
-      rimraf(destinationRepoPath, err => {
-        if (err) {
-          console.log(`error removing test repo clone locally :: ${err.message}`);
-        }
-        else {
-          console.log(`successfully removed ${destinationRepoPath}`);
-        }
-      });
+      rimraf(testRepoClonePath);
     }
   });
-  fs.stat(nodeModulesTestRepoPath, (err) => {
+  fs.stat(testNodeModulesPath, err => {
     if (!err) {
-      rimraf(nodeModulesTestRepoPath, err => {
-        if (err) {
-          console.log(`error removing node modules test repo clone :: ${err.message}`);
-        }
-        else {
-          console.log(`successfully removed ${nodeModulesTestRepoPath}`);
-        }
-      });
+      rimraf(testNodeModulesPath);
     }
   });
 });
