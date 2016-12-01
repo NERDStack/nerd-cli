@@ -4,6 +4,7 @@ const rimraf = require('rimraf');
 const install = require('./install');
 
 const destinationDir = 'testdir';
+const destinationDirNodeModulesTest = 'nmtest';
 
 /* eslint-disable no-undef */
 
@@ -21,14 +22,45 @@ test('remote repo is cloned', () => {
     });
 });
 
-afterAll(() => {
+test('npm modules installed', () => {
+  install(destinationDirNodeModulesTest)
+    .then(() => {
+      const nodeModulesPath = path.join(process.cwd(), destinationDirNodeModulesTest, 'node_modules');
+      console.log(`testing existence of ${nodeModulesPath}`);
+      fs.stat(nodeModulesPath, (err) => {
+        expect(err).toBeUndefined();
+      });
+    })
+    .catch(err => {
+      throw err;
+    });
+});
+
+afterEach(() => {
   const destinationRepoPath = path.join(process.cwd(), destinationDir);
-  rimraf(destinationRepoPath, err => {
-    if (err) {
-      console.log(`error removing test repo clone locally :: ${err.message}`);
+  const nodeModulesTestRepoPath = path.join(process.cwd(), destinationDirNodeModulesTest);
+  fs.stat(destinationRepoPath, (err) => {
+    if (!err) {
+      rimraf(destinationRepoPath, err => {
+        if (err) {
+          console.log(`error removing test repo clone locally :: ${err.message}`);
+        }
+        else {
+          console.log(`successfully removed ${destinationRepoPath}`);
+        }
+      });
     }
-    else {
-      console.log(`successfully removed ${destinationRepoPath}`);
+  });
+  fs.stat(nodeModulesTestRepoPath, (err) => {
+    if (!err) {
+      rimraf(nodeModulesTestRepoPath, err => {
+        if (err) {
+          console.log(`error removing node modules test repo clone :: ${err.message}`);
+        }
+        else {
+          console.log(`successfully removed ${nodeModulesTestRepoPath}`);
+        }
+      });
     }
   });
 });

@@ -1,5 +1,6 @@
 const path = require('path');
 const Git = require('nodegit');
+const npm = require('npm');
 
 function cloneRepo(destination) {
   const repoUrl = 'https://github.com/NERDStack/nerdy-movies';
