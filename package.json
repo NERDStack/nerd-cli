@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "commander": "^2.9.0",
+    "documentdb": "^1.10.0",
     "nodegit": "^0.16.0"
   },
   "devDependencies": {
