@@ -1,6 +1,6 @@
 const program = require('commander');
 const packageConfig = require('../package.json');
-const install = require('./install');
+const install = require('./cli-install');
 const cleanup = require('./cleanup').cleanup;
 
 program.version(packageConfig.version);
