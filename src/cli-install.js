@@ -2,6 +2,7 @@ const readline = require('readline');
 const install = require('./install');
 const data = require('./data');
 const seedData = require('../sample-data/seed-data').seedData;
+const postInstall = require('./post-install');
 
 function askForData(message) {
   return new Promise((resolve, reject) => {
@@ -46,6 +47,10 @@ module.exports = (dir) => {
       databaseName,
       collectionName
     }, seedData))
-    .then(() => console.log('done!'));
+    .then(() => console.log('done seeding data'))
+    .then(() => postInstall(dir, ddbUri, ddbKey))
+    .then(() => console.log('done creating start script'))
+    .then(() => console.log('done!'))
+    .catch(err => console.log(`error ${err.message}`));
 };
 
