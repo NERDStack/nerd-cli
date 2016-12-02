@@ -11,25 +11,21 @@ function copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey) {
     const sourceUriIndicator = 'your documentdb uri';
     const sourceKeyIndicator = 'your documentdb key';
 
-    const sourceStream = fs.createReadStream(fullSourceFileName);
-    const destinationStream = fs.createWriteStream(fullDestinationFileName);
-
-    sourceStream.on('line', line => {
-      destinationStream.write(line
-        .replace(sourceUriIndicator, documentdbUri)
-        .replace(sourceKeyIndicator, documentdbKey));
-    });
-
-    sourceStream.on('close', () => {
-      destinationStream.close();
-      resolve();
-    });
-
-    sourceStream.on('error', err => {
-      reject(err);
-    });
-    destinationStream.on('error', err => {
-      reject(err);
+    fs.readFile(fullSourceFileName, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        const newData = data.replace(sourceUriIndicator, documentdbUri).replace(sourceKeyIndicator, documentdbKey);
+        fs.writeFile(fullDestinationFileName, newData, 'utf8', err => {
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        });
+      }
     });
   });
 }
