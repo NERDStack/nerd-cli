@@ -1,0 +1,55 @@
+{
+  "seedData": [
+    {
+      "id": "0",
+      "name": "Star Wars: The Clone Wars",
+      "liked": true
+    },
+    {
+      "id": "1",
+      "name": "Beowulf",
+      "liked": true
+    },
+    {
+      "id": "2",
+      "name": "The Last Days on Mars",
+      "liked": true
+    },
+    {
+      "id": "3",
+      "name": "Big Fish",
+      "liked": true
+    },
+    {
+      "id": "4",
+      "name": "Transatlantic Tunnel",
+      "liked": false
+    },
+    {
+      "id": "5",
+      "name": "Dragonfyre",
+      "liked": true
+    },
+    {
+      "id": "6",
+      "name": "War of the Worlds: Goliath",
+      "liked": false
+    },
+    {
+      "id": "7",
+      "name": "Batman & Robin",
+      "liked": true
+    },
+    {
+      "id": "8",
+      "name": "Monsters",
+      "liked": true
+    },
+    {
+      "id": "9",
+      "name": "Mega Shark vs. Mecha Shark",
+      "liked": true
+    }
+  ]
+}
+
