@@ -1,2 +1,6 @@
+# node modules folder
 node_modules/
+
+# script to run test (includes sensitive data)
+scripts/test.sh
 
