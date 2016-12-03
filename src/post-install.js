@@ -31,6 +31,6 @@ function copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey) {
 }
 
 module.exports = (dir, documentdbUri, documentdbKey) => {
-  return copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey); 
+  return copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey);
 };
 
