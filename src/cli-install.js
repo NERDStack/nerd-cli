@@ -48,7 +48,7 @@ module.exports = (dir) => {
       collectionName
     }, seedData))
     .then(() => console.log('done seeding data'))
-    .then(() => postInstall(dir, ddbUri, ddbKey))
+    .then(() => postInstall(dir, ddbUri, ddbKey, { databaseName, collectionName }))
     .then(() => console.log('done creating start script'))
     .then(() => console.log('done!'))
     .catch(err => console.log(`error ${err.message}`));

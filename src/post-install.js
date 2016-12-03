@@ -1,6 +1,33 @@
 const fs = require('fs');
 const path = require('path');
 
+function modifyDataConfig(dir, databaseName, collectionName) {
+  return new Promise((resolve, reject) => {
+    const pathToDataConfig = path.join(dir, 'server', 'data', 'config.js');
+    /* eslint-disable quotes */
+    const sourceDbNameIndicator = "'nerdymovies'";
+    const sourceCollNameIndicator = "'movies'";
+    /* eslint-enable quotes */
+
+    fs.readFile(pathToDataConfig, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        const newData = data.replace(sourceDbNameIndicator, `'${databaseName}'`).replace(sourceCollNameIndicator, `'${collectionName}'`);
+        fs.writeFile(pathToDataConfig, newData, 'utf8', err => {
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        });
+      }
+    });
+  });
+}
+
 function copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey) {
   return new Promise((resolve, reject) => {
     const containingDirName = 'scripts';
@@ -30,7 +57,8 @@ function copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey) {
   });
 }
 
-module.exports = (dir, documentdbUri, documentdbKey) => {
-  return copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey);
+module.exports = (dir, documentdbUri, documentdbKey, connInfo) => {
+  return copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey)
+    .then(() => modifyDataConfig(dir, connInfo.databaseName, connInfo.collectionName));
 };
 
