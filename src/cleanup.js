@@ -1,10 +1,4 @@
-module.exports = (() => {
-  function cleanup() {
-    console.log('running cleanup...');
-  }
-
-  return {
-    cleanup
-  };
-})();
+module.exports = () => {
+  console.log('running cleanup...');
+};
 
