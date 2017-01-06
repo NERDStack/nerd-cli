@@ -1,4 +1,15 @@
+const exec = require('child_process').exec;
+
 module.exports = () => {
-  console.log('running cleanup...');
+  return new Promise((resolve, reject) => {
+    exec('npm run cleanup', err => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve();
+      }
+    });
+  });
 };
 
