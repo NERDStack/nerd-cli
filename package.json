@@ -22,6 +22,8 @@
     "url": "https://github.com/NERDStack/nerd-cli.git"
   },
   "dependencies": {
+    "azure-arm-resource": "^1.6.1-preview",
+    "azure-arm-website": "^0.11.5",
     "commander": "^2.9.0",
     "documentdb": "^1.10.0",
     "nodegit": "^0.16.0"
