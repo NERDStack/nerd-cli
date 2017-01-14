@@ -22,13 +22,13 @@ module.exports.listRegions = () => {
         const client = new resourceManagement.SubscriptionClient(creds);
         client.subscriptions.listLocations(subs[0].id, (err, result, request, response) => {
           if (err) {
-            console.log(`Error as follows:\n${err}`);
             rl.close();
             reject(err);
             return;
           }
-          // console.log(result);
-          console.log(subs);
+          result.forEach(region => {
+            console.log(`${region.displayName} (${region.name})`);
+          });
           rl.close();
           resolve();
         });
