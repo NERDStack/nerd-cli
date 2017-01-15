@@ -6,7 +6,7 @@ module.exports.publish = () => {
   return promptForPublishParameters()
     .then(output => {
       console.log(`Location: ${output.location}`);
-      console.log(`Web app name: ${output.webAppName}`);
+      console.log(`Web app name: ${output.name}`);
     });
 };
 
@@ -27,7 +27,7 @@ function createResourceGroup(auth, options) {
     const client = new resourceManagement.ResourceManagementClient(auth.credentials, auth.subscriptions[0].id);
     client.resourceGroups.createOrUpdate(
       // currently we will name the resource group the same name as the web app
-      options.webAppName,
+      options.name,
       { location: options.location },
       (err, result, request, response) => {
         if (err) {
@@ -49,9 +49,9 @@ function promptForPublishParameters() {
 
     rl.question('Tenant ID (optional): ', tenantId => {
       rl.question('Location (found by running `nerd regions`): ', location => {
-        rl.question('Web app name: ', webAppName => {
+        rl.question('Web app name: ', name => {
           rl.close();
-          resolve({ tenantId, webAppName, location });
+          resolve({ tenantId, name, location });
         });
       });
     });
