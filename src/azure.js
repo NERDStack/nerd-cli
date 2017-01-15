@@ -3,8 +3,28 @@ const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
 
 module.exports.publish = () => {
-  console.log('yay azure...');
+  return promptForPublishParameters()
+    .then(output => {
+      console.log(`Location: ${output.location}`);
+      console.log(`Web app name: ${output.webAppName}`);
+    });
 };
+
+function promptForPublishParameters() {
+  return new Promise(resolve => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    rl.question('Location (found by running `nerd regions`): ', location => {
+      rl.question('Web app name: ', webAppName => {
+        rl.close();
+        resolve({ webAppName, location });
+      });
+    });
+  });
+}
 
 module.exports.listRegions = () => {
   return new Promise((resolve, reject) => {
