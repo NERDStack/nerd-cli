@@ -10,6 +10,36 @@ module.exports.publish = () => {
     });
 };
 
+function auth(tenantId) {
+  return new Promise((resolve, reject) => {
+    msRestAzure.interactiveLogin({ domain: tenantId }, (err, credentials, subscriptions) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(credentials, subscriptions);
+    });
+  });
+}
+
+function createResourceGroup(auth, options) {
+  return new Promise((resolve, reject) => {
+    const client = new resourceManagement.ResourceManagementClient(auth.credentials, auth.subscriptions[0].id);
+    client.resourceGroups.createOrUpdate(
+      // currently we will name the resource group the same name as the web app
+      options.webAppName,
+      { location: options.location },
+      (err, result, request, response) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(result);
+      }
+    );
+  });
+}
+
 function promptForPublishParameters() {
   return new Promise(resolve => {
     const rl = readline.createInterface({
@@ -17,10 +47,12 @@ function promptForPublishParameters() {
       output: process.stdout
     });
 
-    rl.question('Location (found by running `nerd regions`): ', location => {
-      rl.question('Web app name: ', webAppName => {
-        rl.close();
-        resolve({ webAppName, location });
+    rl.question('Tenant ID (optional): ', tenantId => {
+      rl.question('Location (found by running `nerd regions`): ', location => {
+        rl.question('Web app name: ', webAppName => {
+          rl.close();
+          resolve({ tenantId, webAppName, location });
+        });
       });
     });
   });
