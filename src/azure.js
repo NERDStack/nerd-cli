@@ -3,11 +3,16 @@ const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
 
 module.exports.publish = () => {
+  let outputCached;
   return promptForPublishParameters()
     .then(output => {
-      console.log(`Location: ${output.location}`);
-      console.log(`Web app name: ${output.name}`);
-    });
+      outputCached = output;
+      return auth(output.tenantId);
+    })
+    .then(auth =>
+      createResourceGroup(auth, outputCached))
+    .then(() => console.log('created resource group'))
+    .catch(err => console.log(err.message));
 };
 
 function auth(tenantId) {
@@ -17,7 +22,7 @@ function auth(tenantId) {
         reject(err);
         return;
       }
-      resolve(credentials, subscriptions);
+      resolve({ credentials, subscriptions });
     });
   });
 }
@@ -29,7 +34,7 @@ function createResourceGroup(auth, options) {
       // currently we will name the resource group the same name as the web app
       options.name,
       { location: options.location },
-      (err, result, request, response) => {
+      (err, result) => {
         if (err) {
           reject(err);
           return;
@@ -72,7 +77,7 @@ module.exports.listRegions = () => {
           return;
         }
         const client = new resourceManagement.SubscriptionClient(creds);
-        client.subscriptions.listLocations(subs[0].id, (err, result, request, response) => {
+        client.subscriptions.listLocations(subs[0].id, (err, result) => {
           if (err) {
             rl.close();
             reject(err);
