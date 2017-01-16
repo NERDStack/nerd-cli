@@ -1,4 +1,5 @@
 const readline = require('readline');
+const chalk = require('chalk');
 const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
 const webSiteManagement = require('azure-arm-website');
@@ -14,7 +15,8 @@ module.exports.publish = () => {
       createResourceGroup(auth, outputCached))
     .then(() => createWebApp(auth, outputCached))
     .then(() => enableGitPushDeploy(auth, outputCached))
-    .catch(err => console.log(err.message));
+    .then(() => displayGitCredentialsMessage())
+    .catch(err => console.log(`Azure publishing error: ${err.message}`));
 };
 
 function auth(tenantId) {
@@ -27,6 +29,14 @@ function auth(tenantId) {
       resolve({ credentials, subscriptions });
     });
   });
+}
+
+function displayGitCredentialsMessage() {
+  console.log(chalk.bold.blue(`    If this is the first time you are using
+    local git deployment to Azure, set up your
+    git credentials by navigating to the Azure
+    portal -> web site -> deployment credentials
+    to set/change your git credentials`));
 }
 
 function enableGitPushDeploy(auth, options) {
