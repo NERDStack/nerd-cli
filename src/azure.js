@@ -1,6 +1,7 @@
 const readline = require('readline');
 const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
+const webSiteManagement = require('azure-arm-website');
 
 module.exports.publish = () => {
   let outputCached;
@@ -11,7 +12,7 @@ module.exports.publish = () => {
     })
     .then(auth =>
       createResourceGroup(auth, outputCached))
-    .then(() => console.log('created resource group'))
+    .then(() => createWebApp(auth, outputCached))
     .catch(err => console.log(err.message));
 };
 
@@ -24,6 +25,27 @@ function auth(tenantId) {
       }
       resolve({ credentials, subscriptions });
     });
+  });
+}
+
+function createWebApp(auth, options) {
+  return new Promise((resolve, reject) => {
+    const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
+    client.sites.createOrUpdateSite(
+      options.name,
+      options.name,
+      {
+        siteName: options.name,
+        location: options.location
+      },
+      (err, result) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(result);
+      }
+    );
   });
 }
 
