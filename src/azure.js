@@ -6,15 +6,18 @@ const webSiteManagement = require('azure-arm-website');
 
 module.exports.publish = () => {
   let outputCached;
+  let authCached;
   return promptForPublishParameters()
     .then(output => {
       outputCached = output;
       return auth(output.tenantId);
     })
-    .then(auth =>
-      createResourceGroup(auth, outputCached))
-    .then(() => createWebApp(auth, outputCached))
-    .then(() => enableGitPushDeploy(auth, outputCached))
+    .then(auth => {
+      authCached = auth;
+      return createResourceGroup(auth, outputCached);
+    })
+    .then(() => createWebApp(authCached, outputCached))
+    .then(() => enableGitPushDeploy(authCached, outputCached))
     .then(() => displayGitCredentialsMessage())
     .catch(err => console.log(`Azure publishing error: ${err.message}`));
 };
