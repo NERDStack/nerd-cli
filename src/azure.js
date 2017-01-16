@@ -13,6 +13,7 @@ module.exports.publish = () => {
     .then(auth =>
       createResourceGroup(auth, outputCached))
     .then(() => createWebApp(auth, outputCached))
+    .then(() => enableGitPushDeploy(auth, outputCached))
     .catch(err => console.log(err.message));
 };
 
@@ -25,6 +26,28 @@ function auth(tenantId) {
       }
       resolve({ credentials, subscriptions });
     });
+  });
+}
+
+function enableGitPushDeploy(auth, options) {
+  return new Promise((resolve, reject) => {
+    const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
+    client.sites.updateSiteConfig(
+      options.name,
+      options.name,
+      {
+        scmType: 'LocalGit',
+        location: options.location,
+        remoteDebuggingEnabled: true
+      },
+      (err, result) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(result);
+      }
+    );
   });
 }
 
