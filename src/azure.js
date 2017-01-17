@@ -1,5 +1,6 @@
 const readline = require('readline');
 const chalk = require('chalk');
+const exec = require('child_process').exec;
 const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
 const webSiteManagement = require('azure-arm-website');
@@ -18,6 +19,7 @@ module.exports.publish = () => {
     })
     .then(() => createWebApp(authCached, outputCached))
     .then(() => enableGitPushDeploy(authCached, outputCached))
+    .then(() => fixGitRemotes(outputCached.name))
     .then(() => displayGitCredentialsMessage())
     .catch(err => console.log(`Azure publishing error: ${err.message}`));
 };
@@ -40,6 +42,24 @@ function displayGitCredentialsMessage() {
     git credentials by navigating to the Azure
     portal -> web site -> deployment credentials
     to set/change your git credentials`));
+}
+
+function fixGitRemotes(webAppName) {
+  return new Promise((resolve, reject) => {
+    exec('git remote remove origin', err => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      exec(`git remote add azure https://${webAppName}.scm.azurewebsites.net:443/${webAppName}.git`, err => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  });
 }
 
 function enableGitPushDeploy(auth, options) {
