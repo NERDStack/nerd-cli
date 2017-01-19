@@ -9,7 +9,7 @@ module.exports = () => {
       else {
         resolve();
       }
-    });
+    }).stdout.pipe(process.stdout);
   });
 };
 
