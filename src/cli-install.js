@@ -51,6 +51,7 @@ module.exports = (dir) => {
     .then(() => postInstall(dir, ddbUri, ddbKey, { databaseName, collectionName }))
     .then(() => console.log('done creating start script'))
     .then(() => console.log('done!'))
+    .then(() => console.log(`change directory by running 'cd ${dir}' and run it 'nerd run'`))
     .catch(err => console.log(`error ${err.message}`));
 };
 
