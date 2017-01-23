@@ -57,8 +57,35 @@ function copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey) {
   });
 }
 
+function modifyStartLocalWinScript(dir, documentdbUri, documentdbKey) {
+  return new Promise((resolve, reject) => {
+    const containingDirName = 'scripts';
+    const scriptBaseName = 'start-local.ps1';
+    const scriptFileName = path.join(dir, containingDirName, scriptBaseName);
+    const destinationFileName = path.join(dir, containingDirName, 'start-local-remote-documentdb.ps1');
+
+    fs.readFile(scriptFileName, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const newData = data
+        .replace(/\n\$documentdb_uri.*/, `\n$documentdb_uri = "${documentdbUri}"`)
+        .replace(/\n\$documentdb_key.*/, `\n$documentdb_key = "${documentdbKey}"`);
+      fs.writeFile(destinationFileName, newData, 'utf8', err => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  });
+}
+
 module.exports = (dir, documentdbUri, documentdbKey, connInfo) => {
   return copyAndModifyStartLocalScript(dir, documentdbUri, documentdbKey)
+    .then(() => modifyStartLocalWinScript(dir, documentdbUri, documentdbKey))
     .then(() => modifyDataConfig(dir, connInfo.databaseName, connInfo.collectionName));
 };
 
