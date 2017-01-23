@@ -1,6 +1,6 @@
 {
   "name": "nerd-cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "NERD stack CLI",
   "bin": {
     "nerd": "./bin/nerd-cli"
