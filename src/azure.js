@@ -4,6 +4,7 @@ const exec = require('child_process').exec;
 const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
 const webSiteManagement = require('azure-arm-website');
+const configManagement = require('./config');
 
 module.exports.publish = () => {
   let outputCached;
@@ -23,6 +24,18 @@ module.exports.publish = () => {
     .then(() => displayGitCredentialsMessage())
     .catch(err => console.log(`Azure publishing error: ${err.message}`));
 };
+
+function getTenantIdFromConfig() {
+  return configManagement.loadConfig()
+    .then(config => config.tenantId)
+    .catch(() => '');
+}
+
+function saveTenantIdToConfig(tenantId) {
+  return configManagement.loadConfig()
+    .then(config => Object.assign(config, { tenantId }))
+    .then(config => configManagement.saveConfig(config));
+}
 
 function auth(tenantId) {
   return new Promise((resolve, reject) => {
@@ -124,31 +137,92 @@ function createResourceGroup(auth, options) {
 }
 
 function promptForPublishParameters() {
-  return new Promise(resolve => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
-    rl.question('Tenant ID (optional): ', tenantId => {
-      rl.question('Location (found by running `nerd regions`): ', location => {
-        rl.question('Web app name: ', name => {
-          rl.close();
-          resolve({ tenantId, name, location });
-        });
-      });
-    });
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
   });
+
+  let parentTenantId;
+  let parentLocation;
+
+  return getTenantIdFromConfig()
+    .then(tenantId =>
+      new Promise(resolve => {
+        rl.question(`(optional) Tenant ID [default: ${tenantId ? tenantId : 'none'}]: `, inputTenantId => {
+          if (inputTenantId) {
+            // user inputed a tenant id, so this is now the tenantId and we should cache it
+            parentTenantId = inputTenantId;
+            resolve(inputTenantId);
+          }
+          else if (!inputTenantId && tenantId) {
+            // user did not input a tenant id and an actual one was cached
+            parentTenantId = tenantId;
+            resolve(tenantId);
+          }
+          else {
+            // no inputed tenant id and no cached one
+            parentTenantId = '';
+            resolve();
+          }
+        });
+      })
+    )
+    .then(tenantId => {
+      if (tenantId) {
+        saveTenantIdToConfig(tenantId);
+      }
+    })
+    .then(() => new Promise(resolve => {
+      rl.question('Location (found by running `nerd regions`): ', location => {
+        parentLocation = location;
+        resolve();
+      });
+    }))
+    .then(() => new Promise(resolve => {
+      rl.question('Web app name: ', name => {
+        rl.close();
+        resolve({ tenantId: parentTenantId, name, location: parentLocation });
+      });
+    }));
 }
 
 module.exports.listRegions = () => {
-  return new Promise((resolve, reject) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    rl.question('Your tenant ID [optional]: ', tenantId => {
-      msRestAzure.interactiveLogin({ domain: tenantId }, (err, creds, subs) => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  let parentTenantId;
+
+  return getTenantIdFromConfig()
+    .then(tenantId =>
+      new Promise(resolve => {
+        rl.question(`(optional) Tenant ID [default: ${tenantId ? tenantId : 'none'}]: `, inputTenantId => {
+          if (inputTenantId) {
+            // user inputed a tenant id, so this is now the tenantId and we should cache it
+            parentTenantId = inputTenantId;
+            resolve(inputTenantId);
+          }
+          else if (!inputTenantId && tenantId) {
+            // user did not input a tenant id and an actual one was cached
+            parentTenantId = tenantId;
+            resolve(tenantId);
+          }
+          else {
+            // no inputed tenant id and no cached one
+            parentTenantId = '';
+            resolve();
+          }
+        });
+      })
+    )
+    .then(tenantId => {
+      if (tenantId) {
+        saveTenantIdToConfig(tenantId);
+      }
+    })
+    .then(() => new Promise((resolve, reject) => {
+      msRestAzure.interactiveLogin({ domain: parentTenantId }, (err, creds, subs) => {
         if (!subs || subs.length === 0) {
           reject(Error('Unable to retrieve subscriptions'));
           rl.close();
@@ -168,6 +242,5 @@ module.exports.listRegions = () => {
           resolve();
         });
       });
-    });
-  });
+    }));
 };
