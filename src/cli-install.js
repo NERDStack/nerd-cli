@@ -3,6 +3,7 @@ const install = require('./install');
 const data = require('./data');
 const seedData = require('../sample-data/seed-data').seedData;
 const postInstall = require('./post-install');
+const utility = require('./apputil');
 
 function askForData(message) {
   return new Promise((resolve, reject) => {
@@ -35,10 +36,10 @@ module.exports = (dir) => {
     .then(() => askForData('Collection name (will be created): '))
     .then(collName => collectionName = collName)
     .then(() => {
-      console.log('Installing node modules');
+      utility.displayInfo('Installing node_modules (this may take a minute...)')
       return install(dir);
     })
-    .then(() => console.log('done installing node modules'))
+    .then(() => utility.displayInfo('Done installing node modules!'))
     .then(() => data.createCollection(ddbUri, ddbKey, {
       databaseName,
       collectionName
@@ -47,11 +48,10 @@ module.exports = (dir) => {
       databaseName,
       collectionName
     }, seedData))
-    .then(() => console.log('done seeding data'))
+    .then(() => utility.displayInfo('Done seeding data!'))
     .then(() => postInstall(dir, ddbUri, ddbKey, { databaseName, collectionName }))
-    .then(() => console.log('done creating start script'))
-    .then(() => console.log('done!'))
-    .then(() => console.log(`change directory by running 'cd ${dir}' and run it 'nerd run'`))
-    .catch(err => console.log(`error ${err.message}`));
+    .then(() => utility.displayInfo('Done creating start script!'))
+    .then(() => utility.displayAction(`Change directory by running 'cd ${dir}' and run it 'nerd run'`))
+    .catch(err => utility.displayError(err));
 };
 
