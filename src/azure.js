@@ -1,5 +1,4 @@
 const readline = require('readline');
-const chalk = require('chalk');
 const exec = require('child_process').exec;
 const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
