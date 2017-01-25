@@ -5,6 +5,7 @@ const msRestAzure = require('ms-rest-azure');
 const resourceManagement = require('azure-arm-resource');
 const webSiteManagement = require('azure-arm-website');
 const configManagement = require('./config');
+const util = require('./apputil');
 
 module.exports.publish = () => {
   let outputCached;
@@ -50,11 +51,12 @@ function auth(tenantId) {
 }
 
 function displayGitCredentialsMessage() {
-  console.log(chalk.bold.blue(`    If this is the first time you are using
-    local git deployment to Azure, set up your
-    git credentials by navigating to the Azure
-    portal -> web site -> deployment credentials
-    to set/change your git credentials`));
+  util.displayAction('First time with local git deployment to Azure App Service?');
+  util.displayAction(' 1. In your browser, navigate to https://portal.azure.com');
+  util.displayAction(' 2. Find your web app resource group and navigate to it');
+  util.displayAction(' 3. Click on the App Service in your resource group');
+  util.displayAction(' 4. Navigate to the `Deployment credentials` section');
+  util.displayAction(' 5. Add/change your git deployment credentials and save');
 }
 
 function fixGitRemotes(webAppName) {
