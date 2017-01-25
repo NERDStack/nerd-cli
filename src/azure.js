@@ -12,17 +12,30 @@ module.exports.publish = () => {
   return promptForPublishParameters()
     .then(output => {
       outputCached = output;
+      // {
+      //  tenantId,
+      //  name,
+      //  location,
+      //  documentdbUri,
+      //  documentdbKey
+      // }
       return auth(output.tenantId);
     })
     .then(auth => {
       authCached = auth;
       return createResourceGroup(auth, outputCached);
     })
+    .then(() => util.displayInfo(`Resource group ${outputCached.name} created`))
     .then(() => createWebApp(authCached, outputCached))
+    .then(() => util.displayInfo(`Web app ${outputCached.name} created`))
     .then(() => enableGitPushDeploy(authCached, outputCached))
+    .then(() => util.displayInfo('Local git deployment to Azure App Service enabled'))
+    .then(() => setAppSettings(authCached, outputCached))
+    .then(() => util.displayInfo('App Service environment variables for DocumentDB connection created'))
     .then(() => fixGitRemotes(outputCached.name))
+    .then(() => util.displayInfo('Local git repo remotes changed'))
     .then(() => displayGitCredentialsMessage())
-    .catch(err => console.log(`Azure publishing error: ${err.message}`));
+    .catch(err => util.displayError(err));
 };
 
 function getTenantIdFromConfig() {
@@ -98,6 +111,31 @@ function enableGitPushDeploy(auth, options) {
   });
 }
 
+function setAppSettings(auth, options) {
+  return new Promise((resolve, reject) => {
+    const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
+    client.sites.updateSiteAppSettings(
+      options.name,
+      options.name,
+      {
+        location: options.location,
+        properties: {
+          DOCUMENTDB_URI: options.documentdbUri,
+          DOCUMENTDB_KEY: options.documentdbKey,
+          WEBSITE_NODE_DEFAULT_VERSION: '6.9.1'
+        }
+      },
+      (err, result) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(result);
+      }
+    );
+  });
+}
+
 function createWebApp(auth, options) {
   return new Promise((resolve, reject) => {
     const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
@@ -145,6 +183,8 @@ function promptForPublishParameters() {
 
   let parentTenantId;
   let parentLocation;
+  let parentDocumentdbUri;
+  let parentDocumentdbKey;
 
   return getTenantIdFromConfig()
     .then(tenantId =>
@@ -174,6 +214,18 @@ function promptForPublishParameters() {
       }
     })
     .then(() => new Promise(resolve => {
+      rl.question('DocumentDB URI: ', documentdbUri => {
+        parentDocumentdbUri = documentdbUri;
+        resolve();
+      });
+    }))
+    .then(() => new Promise(resolve => {
+      rl.question('DocumentDB key: ', documentdbKey => {
+        parentDocumentdbKey = documentdbKey;
+        resolve();
+      });
+    }))
+    .then(() => new Promise(resolve => {
       rl.question('Location (found by running `nerd regions`): ', location => {
         parentLocation = location;
         resolve();
@@ -182,7 +234,13 @@ function promptForPublishParameters() {
     .then(() => new Promise(resolve => {
       rl.question('Web app name: ', name => {
         rl.close();
-        resolve({ tenantId: parentTenantId, name, location: parentLocation });
+        resolve({
+          tenantId: parentTenantId,
+          name,
+          location: parentLocation,
+          documentdbUri: parentDocumentdbUri,
+          documentdbKey: parentDocumentdbKey
+        });
       });
     }));
 }
