@@ -15,6 +15,7 @@ module.exports.publish = () => {
       // {
       //  tenantId,
       //  name,
+      //  resourceGroupName,
       //  location,
       //  documentdbUri,
       //  documentdbKey
@@ -25,7 +26,7 @@ module.exports.publish = () => {
       authCached = auth;
       return createResourceGroup(auth, outputCached);
     })
-    .then(() => util.displayInfo(`Resource group ${outputCached.name} created`))
+    .then(() => util.displayInfo(`Resource group ${outputCached.resourceGroupName} created`))
     .then(() => createWebApp(authCached, outputCached))
     .then(() => util.displayInfo(`Web app ${outputCached.name} created`))
     .then(() => enableGitPushDeploy(authCached, outputCached))
@@ -93,7 +94,7 @@ function enableGitPushDeploy(auth, options) {
   return new Promise((resolve, reject) => {
     const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
     client.sites.updateSiteConfig(
-      options.name,
+      options.resourceGroupName,
       options.name,
       {
         scmType: 'LocalGit',
@@ -115,7 +116,7 @@ function setAppSettings(auth, options) {
   return new Promise((resolve, reject) => {
     const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
     client.sites.updateSiteAppSettings(
-      options.name,
+      options.resourceGroupName,
       options.name,
       {
         location: options.location,
@@ -140,7 +141,7 @@ function createWebApp(auth, options) {
   return new Promise((resolve, reject) => {
     const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
     client.sites.createOrUpdateSite(
-      options.name,
+      options.resourceGroupName,
       options.name,
       {
         siteName: options.name,
@@ -162,7 +163,7 @@ function createResourceGroup(auth, options) {
     const client = new resourceManagement.ResourceManagementClient(auth.credentials, auth.subscriptions[0].id);
     client.resourceGroups.createOrUpdate(
       // currently we will name the resource group the same name as the web app
-      options.name,
+      options.resourceGroupName,
       { location: options.location },
       (err, result) => {
         if (err) {
@@ -185,6 +186,7 @@ function promptForPublishParameters() {
   let parentLocation;
   let parentDocumentdbUri;
   let parentDocumentdbKey;
+  let parentResourceGroupName;
 
   return getTenantIdFromConfig()
     .then(tenantId =>
@@ -231,12 +233,19 @@ function promptForPublishParameters() {
         resolve();
       });
     }))
+    .then(() => new Promise (resolve => {
+      rl.question('Resource group name (will be created if doesn\'t exist): ', resourceGroupName => {
+        parentResourceGroupName = resourceGroupName;
+        resolve();
+      });
+    }))
     .then(() => new Promise(resolve => {
       rl.question('Web app name: ', name => {
         rl.close();
         resolve({
           tenantId: parentTenantId,
           name,
+          resourceGroupName: parentResourceGroupName,
           location: parentLocation,
           documentdbUri: parentDocumentdbUri,
           documentdbKey: parentDocumentdbKey
