@@ -36,7 +36,7 @@ module.exports = (dir) => {
     .then(() => askForData('Collection name (will be created): '))
     .then(collName => collectionName = collName)
     .then(() => {
-      utility.displayInfo('Installing node_modules (this may take a minute...)')
+      utility.displayInfo('Installing node_modules (this may take a minute...)');
       return install(dir);
     })
     .then(() => utility.displayInfo('Done installing node modules!'))
