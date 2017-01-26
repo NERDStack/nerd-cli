@@ -4,6 +4,7 @@ const data = require('./data');
 const seedData = require('../sample-data/seed-data').seedData;
 const postInstall = require('./post-install');
 const utility = require('./apputil');
+const exec = require('child_process').exec;
 
 function askForData(message) {
   return new Promise((resolve, reject) => {
@@ -20,6 +21,24 @@ function askForData(message) {
         rl.close();
         resolve(answer);
       }
+    });
+  });
+}
+
+function showGitStatus(dir) {
+  return new Promise((resolve, reject) => {
+    exec('git status', { cwd: dir }, (err, stdout, stderr) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (stderr) {
+        utility.displayError(stderr);
+      }
+      else if (stdout) {
+        utility.displayLongInfo(stdout);
+      }
+      resolve();
     });
   });
 }
@@ -51,6 +70,8 @@ module.exports = (dir) => {
     .then(() => utility.displayInfo('Done seeding data!'))
     .then(() => postInstall(dir, ddbUri, ddbKey, { databaseName, collectionName }))
     .then(() => utility.displayInfo('Done creating start script!'))
+    .then(() => utility.displayInfo('Showing git repo current status... (commit any changes before proceeding)'))
+    .then(() => showGitStatus(dir))
     .then(() => utility.displayAction(`Change directory by running 'cd ${dir}' and run it 'nerd run'`))
     .catch(err => utility.displayError(err));
 };
