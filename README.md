@@ -94,3 +94,7 @@ nerd regions
 
 *What does this do?*
  1. Makes a request and displays the Azure regions available
+
+## :bug: Bugs, feature requests, questions
+
+Please open up an [issue on this repo](https://github.com/NERDStack/nerd-cli/issues) for a team member (or community member!) to take action on
