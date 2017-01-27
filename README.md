@@ -4,10 +4,10 @@
 
 NERD is opinionated tooling for full-stack and cloud-hosted web applications. It lowers the barrier of entry for developing and deploying an industry-proven web stack.
 
- - **Node.js** - server runtime
- - **Express** - node web framework
- - **React** - front-end library
- - **DocumentDB** - persistent NoSQL data storage
+ - :rocket: **Node.js** - server runtime
+ - :earth_americas: **Express** - node web framework
+ - :crown: **React** - front-end library
+ - :trophy: **DocumentDB** - persistent NoSQL data storage
 
 ## What is the CLI for?
 
@@ -39,7 +39,7 @@ npm install -g nerd-cli
     -V, --version  output the version number
 ```
 
-### Create a new web app
+### :one: Create a new web app
 
 ```
 nerd install <app_name>
@@ -50,7 +50,7 @@ nerd install <app_name>
  2. Configures the connection to the back-end DocumentDB data source
  3. Creates and configures the necessary npm scripts
 
-### Run the web app locally
+### :two: Run the web app locally
 
  ```
 nerd run
@@ -60,7 +60,7 @@ nerd run
  1. Creates a production build of the web app (`npm run build`)
  2. Runs the platform-appropriate start script (`npm run start-local[-win]`)
 
-### Cleanup the sample app code
+### :three: Cleanup the sample app code
 
 *The sample app is an illustration/demo of a running NERD app, but when you are ready to start you app development `nerd cleanup` will remove the unnecessary code from the project*
 
@@ -71,7 +71,7 @@ nerd cleanup
 *What does this do?*
  1. Runs `npm run cleanup` on the project (via [boiler-room-custodian](https://github.com/tstringer/boiler-room-custodian))
 
-### Publish to Azure App Service
+### :four: Publish to Azure App Service
 
 ```
 nerd publish
