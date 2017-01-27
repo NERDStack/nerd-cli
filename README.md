@@ -21,6 +21,24 @@ npm install -g nerd-cli
 
 ## Usage
 
+```
+  Usage: nerd [options] [command]
+
+
+  Commands:
+
+    install [dir]  install the base app
+    run            run the app (local default)
+    cleanup        remove all unnecessary sample code
+    publish        publish to Azure
+    regions        list all available Azure regions
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
+```
+
 ### Create a new web app
 
 ```
