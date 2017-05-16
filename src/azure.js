@@ -70,6 +70,7 @@ function auth(tenantId) {
       rl.question('Type the number of the subscription: ', subscriptionId => {
         let id = subscriptionId ? (parseInt(subscriptionId)-1) : 0;
         let subscription = subscriptions[id];
+        rl.close();
         resolve({ credentials, subscription });
       })
     });
