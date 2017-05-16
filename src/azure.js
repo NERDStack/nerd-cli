@@ -78,8 +78,9 @@ function auth(tenantId) {
 
 function displayChooseAzureSubscriptionMessage(subscriptions) {
   util.displayAction('Which Azure Subscription would you like to deploy to?');
+  
   for (var i = 0; i < subscriptions.length; i++) {
-    util.displayAction(`${i+1}. ${subscriptions.name}`);
+    util.displayAction(`${i+1}. ${subscriptions[i].name}`);
   }
 }
 
