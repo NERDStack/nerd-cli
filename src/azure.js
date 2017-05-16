@@ -52,15 +52,35 @@ function saveTenantIdToConfig(tenantId) {
 }
 
 function auth(tenantId) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
   return new Promise((resolve, reject) => {
     msRestAzure.interactiveLogin({ domain: tenantId }, (err, credentials, subscriptions) => {
       if (err) {
         reject(err);
         return;
       }
-      resolve({ credentials, subscriptions });
+
+      // Assumption, we'll only ever need the selected subscription
+      displayChooseAzureSubscriptionMessage(subscriptions);
+
+      rl.question('Type the number of the subscription: ', subscriptionId => {
+        let id = subscriptionId ? (parseInt(subscriptionId)-1) : 0;
+        let subscription = subscriptions[id];
+        resolve({ credentials, subscription });
+      })
     });
   });
+}
+
+function displayChooseAzureSubscriptionMessage(subscriptions) {
+  util.displayAction('Which Azure Subscription would you like to deploy to?');
+  for (var i = 0; i < subscriptions.length; i++) {
+    util.displayAction(`${i+1}. ${subscriptions.name}`);
+  }
 }
 
 function displayGitCredentialsMessage() {
@@ -92,7 +112,7 @@ function fixGitRemotes(webAppName) {
 
 function enableGitPushDeploy(auth, options) {
   return new Promise((resolve, reject) => {
-    const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
+    const client = new webSiteManagement(auth.credentials, auth.subscription.id);
     client.sites.updateSiteConfig(
       options.resourceGroupName,
       options.name,
@@ -114,7 +134,7 @@ function enableGitPushDeploy(auth, options) {
 
 function setAppSettings(auth, options) {
   return new Promise((resolve, reject) => {
-    const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
+    const client = new webSiteManagement(auth.credentials, auth.subscription.id);
     client.sites.updateSiteAppSettings(
       options.resourceGroupName,
       options.name,
@@ -139,7 +159,7 @@ function setAppSettings(auth, options) {
 
 function createWebApp(auth, options) {
   return new Promise((resolve, reject) => {
-    const client = new webSiteManagement(auth.credentials, auth.subscriptions[0].id);
+    const client = new webSiteManagement(auth.credentials, auth.subscription.id);
     client.sites.createOrUpdateSite(
       options.resourceGroupName,
       options.name,
@@ -160,7 +180,7 @@ function createWebApp(auth, options) {
 
 function createResourceGroup(auth, options) {
   return new Promise((resolve, reject) => {
-    const client = new resourceManagement.ResourceManagementClient(auth.credentials, auth.subscriptions[0].id);
+    const client = new resourceManagement.ResourceManagementClient(auth.credentials, auth.subscription.id);
     client.resourceGroups.createOrUpdate(
       // currently we will name the resource group the same name as the web app
       options.resourceGroupName,
